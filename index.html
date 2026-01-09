@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PO Arrival Confirmation</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 420px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 8px;
+      transform: scale(1.2);
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 25px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>PO Arrival Check</h2>
+
+  <label for="poNumber">PO Number</label>
+  <input type="text" id="poNumber" placeholder="Enter PO number" />
+
+  <label>
+    <input type="checkbox" id="arrived" />
+    Marked as arrived
+  </label>
+
+  <label for="receivedBy">Received by</label>
+  <input type="text" id="receivedBy" placeholder="Your name" />
+
+  <button onclick="submitForm()">Submit</button>
+
+  <div id="message"></div>
+
+  <script>
+    function submitForm() {
+      const po = document.getElementById("poNumber").value.trim();
+      const arrived = document.getElementById("arrived").checked;
+      const receivedBy = document.getElementById("receivedBy").value.trim();
+      const messageDiv = document.getElementById("message");
+
+      if (!po || !receivedBy) {
+        alert("Please complete all required fields.");
+        return;
+      }
+
+      if (!arrived) {
+        alert("Please confirm the PO has arrived.");
+        return;
+      }
+
+      // Placeholder reference (future: from Xero via Make.com)
+      const projectReference = "PROJECT REF: ALS-TEST-001";
+
+      messageDiv.style.display = "block";
+      messageDiv.innerHTML = `
+        <strong>Submission successful</strong><br><br>
+        PO Number: ${po}<br>
+        Arrived: Yes<br>
+        Received by: ${receivedBy}<br><br>
+        <strong>${projectReference}</strong>
+      `;
+    }
+  </script>
+
+</body>
+</html>
