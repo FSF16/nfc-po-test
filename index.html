@@ -62,39 +62,38 @@
   <button onclick="submitForm()">Submit</button>
 
   <script>
-    async function submitForm() {
-      const po = document.getElementById("poNumber").value.trim();
-      const arrived = document.getElementById("arrived").checked;
-      const receivedBy = document.getElementById("receivedBy").value.trim();
+  async function submitForm() {
+    const po = document.getElementById("poNumber").value.trim();
+    const arrived = document.getElementById("arrived").checked;
+    const receivedBy = document.getElementById("receivedBy").value.trim();
 
-      if (!po || !receivedBy || !arrived) {
-        alert("Fill all fields and tick arrived.");
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          "https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              po_number: po,
-              arrived: true,
-              received_by: receivedBy
-            })
-          }
-        );
-
-        const data = await response.json();
-        alert("Response from Make: " + data.reference);
-      } catch (err) {
-        alert("POST sent, but no response returned.");
-      }
+    if (!po || !receivedBy || !arrived) {
+      alert("Fill all fields and tick arrived.");
+      return;
     }
-  </script>
+
+    const data = {
+      po_number: po,
+      arrived: true,
+      received_by: receivedBy
+    };
+
+    try {
+      // Send POST with no-cors for testing
+      fetch("https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        mode: "no-cors"  // << temporary fix
+      });
+
+      alert("Form submitted! Check Make.com for the webhook execution.");
+    } catch (err) {
+      alert("Failed to send POST to Make.com");
+    }
+  }
+</script>
+
 
 </body>
 </html>
