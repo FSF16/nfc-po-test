@@ -1,45 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PO Log Form</title>
+  <title>Webhook Test</title>
 </head>
 <body>
-  <h2>PO Log Form for Project</h2>
+  <h2>Webhook Test</h2>
 
-  <form id="poForm">
-    <input type="hidden" id="project" name="project">
-
-    <label>PO Number (mandatory):</label><br>
-    <input type="text" id="poNumber" name="poNumber" required><br><br>
-
-    <label>Marked as received:</label>
-    <input type="checkbox" id="markedReceived" name="markedReceived"><br><br>
-
-    <label>Person (optional):</label><br>
-    <input type="text" id="person" name="person"><br><br>
-
-    <button type="submit">Submit</button>
+  <form id="testForm">
+    <label>Test Number:</label><br>
+    <input type="number" id="testNumber" required><br><br>
+    <button type="submit">Send to Webhook</button>
   </form>
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    document.getElementById("project").value = params.get("project");
+    const project = params.get("project") || "1408071"; // default test project
 
-    document.getElementById("poForm").addEventListener("submit", async (e) => {
+    document.getElementById("testForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const project = document.getElementById("project").value;
-      const poNumber = document.getElementById("poNumber").value;
-      const markedReceived = document.getElementById("markedReceived").checked;
-      const person = document.getElementById("person").value;
+      const testNumber = Number(document.getElementById("testNumber").value);
 
       const payload = {
         project,
-        poNumber,
-        markedReceived,
-        person
+        testNumber
       };
 
-      await fetch("https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      try {
+        await fetch("https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        alert("Webhook POST sent ✅ Check Make.com");
+      } catch (err) {
+        alert("Error sending to webhook: " + err);
+      }
+    });
+  </script>
+</body>
+</html>
