@@ -6,19 +6,63 @@
 <body>
   <h2>PO Arrival Test</h2>
 
-  <form action="https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s" method="POST">
+  <form id="poForm">
     <label>PO Number:</label><br>
-    <input type="text" name="po_number" required><br><br>
+    <input type="text" id="poNumber" name="po_number" required><br><br>
 
     <label>
-      <input type="checkbox" name="arrived" value="true" required>
+      <input type="checkbox" id="arrived" name="arrived" value="true" required>
       Marked as arrived
     </label><br><br>
 
     <label>Received by:</label><br>
-    <input type="text" name="received_by" required><br><br>
+    <input type="text" id="receivedBy" name="received_by" required><br><br>
 
     <button type="submit">Submit</button>
   </form>
+
+  <div id="message" style="margin-top:20px; font-weight:bold;"></div>
+
+  <script>
+    const form = document.getElementById("poForm");
+    const messageDiv = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault(); // prevent page reload
+
+      const po = document.getElementById("poNumber").value.trim();
+      const arrived = document.getElementById("arrived").checked;
+      const receivedBy = document.getElementById("receivedBy").value.trim();
+
+      if (!po || !receivedBy || !arrived) {
+        alert("Fill all fields and tick 'Marked as arrived'.");
+        return;
+      }
+
+      const payload = {
+        po_number: po,
+        arrived: arrived,
+        received_by: receivedBy
+      };
+
+      try {
+        const response = await fetch(
+          "https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          }
+        );
+
+        const data = await response.json();
+
+        // Show the reference returned from Make
+        messageDiv.textContent = "Reference: " + data.reference;
+      } catch (err) {
+        messageDiv.textContent = "Error sending data to Make.com";
+      }
+    });
+  </script>
 </body>
 </html>
