@@ -1,59 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PO Arrival Check</title>
+  <title>PO Log Form</title>
 </head>
 <body>
-  <h2>PO Arrival Check</h2>
+  <h2>PO Log Form for Project</h2>
 
   <form id="poForm">
-    <label>PO Number:</label><br>
-    <input type="text" id="poNumber" name="po_number" required><br><br>
+    <input type="hidden" id="project" name="project">
 
-    <label>
-      <input type="checkbox" id="arrived" name="arrived" value="true" required>
-      Marked as arrived
-    </label><br><br>
+    <label>PO Number (mandatory):</label><br>
+    <input type="text" id="poNumber" name="poNumber" required><br><br>
 
-    <label>Received by:</label><br>
-    <input type="text" id="receivedBy" name="received_by" required><br><br>
+    <label>Marked as received:</label>
+    <input type="checkbox" id="markedReceived" name="markedReceived"><br><br>
+
+    <label>Person (optional):</label><br>
+    <input type="text" id="person" name="person"><br><br>
 
     <button type="submit">Submit</button>
   </form>
 
   <script>
-    const form = document.getElementById("poForm");
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById("project").value = params.get("project");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault(); // stop default form submit
+    document.getElementById("poForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-      const po = document.getElementById("poNumber").value.trim();
-      const arrived = document.getElementById("arrived").checked;
-      const receivedBy = document.getElementById("receivedBy").value.trim();
-
-      if (!po || !receivedBy || !arrived) {
-        alert("Please fill all fields and tick 'Marked as arrived'.");
-        return;
-      }
+      const project = document.getElementById("project").value;
+      const poNumber = document.getElementById("poNumber").value;
+      const markedReceived = document.getElementById("markedReceived").checked;
+      const person = document.getElementById("person").value;
 
       const payload = {
-        po_number: po,
-        arrived: arrived,
-        received_by: receivedBy
+        project,
+        poNumber,
+        markedReceived,
+        person
       };
 
-      try {
-        await fetch("https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        alert("PO submitted successfully! Check Make.com webhook.");
-      } catch (err) {
-        alert("Failed to send PO to Make.com");
-      }
-    });
-  </script>
-</body>
-</html>
+      await fetch("https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
