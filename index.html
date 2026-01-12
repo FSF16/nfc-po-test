@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PO Arrival Confirmation</title>
+  <title>PO Arrival</title>
 
   <style>
     body {
@@ -42,18 +42,11 @@
       font-size: 16px;
       cursor: pointer;
     }
-
-    #message {
-      margin-top: 25px;
-      padding: 15px;
-      border: 1px solid #ccc;
-      display: none;
-    }
   </style>
 </head>
 <body>
 
-  <h2>PO Arrival Check</h2>
+  <h2>PO Arrival Check (POST Test)</h2>
 
   <label for="poNumber">PO Number</label>
   <input type="text" id="poNumber" placeholder="Enter PO number" />
@@ -68,36 +61,38 @@
 
   <button onclick="submitForm()">Submit</button>
 
-  <div id="message"></div>
-
   <script>
-    function submitForm() {
+    async function submitForm() {
       const po = document.getElementById("poNumber").value.trim();
       const arrived = document.getElementById("arrived").checked;
       const receivedBy = document.getElementById("receivedBy").value.trim();
-      const messageDiv = document.getElementById("message");
 
-      if (!po || !receivedBy) {
-        alert("Please complete all required fields.");
+      if (!po || !receivedBy || !arrived) {
+        alert("Fill all fields and tick arrived.");
         return;
       }
 
-      if (!arrived) {
-        alert("Please confirm the PO has arrived.");
-        return;
+      try {
+        const response = await fetch(
+          "https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              po_number: po,
+              arrived: true,
+              received_by: receivedBy
+            })
+          }
+        );
+
+        const data = await response.json();
+        alert("Response from Make: " + data.reference);
+      } catch (err) {
+        alert("POST sent, but no response returned.");
       }
-
-      // Placeholder reference (future: from Xero via Make.com)
-      const projectReference = "PROJECT REF: ALS-TEST-001";
-
-      messageDiv.style.display = "block";
-      messageDiv.innerHTML = `
-        <strong>Submission successful</strong><br><br>
-        PO Number: ${po}<br>
-        Arrived: Yes<br>
-        Received by: ${receivedBy}<br><br>
-        <strong>${projectReference}</strong>
-      `;
     }
   </script>
 
