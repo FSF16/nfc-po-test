@@ -1,43 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Webhook Test</title>
+  <title>PO Arrival NFC Test</title>
 </head>
 <body>
-  <h2>Webhook Test</h2>
+  <h2>PO Arrival Test</h2>
 
-  <form id="testForm">
-    <label>Test Number:</label><br>
-    <input type="number" id="testNumber" required><br><br>
-    <button type="submit">Send to Webhook</button>
+  <form action="https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s" method="POST">
+    <label>PO Number:</label><br>
+    <input type="text" name="po_number" required><br><br>
+
+    <label>
+      <input type="checkbox" name="arrived" value="true" required>
+      Marked as arrived
+    </label><br><br>
+
+    <label>Received by:</label><br>
+    <input type="text" name="received_by" required><br><br>
+
+    <button type="submit">Submit</button>
   </form>
-
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const project = params.get("project") || "1408071"; // default test project
-
-    document.getElementById("testForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const testNumber = Number(document.getElementById("testNumber").value);
-
-      const payload = {
-        project,
-        testNumber
-      };
-
-      try {
-        await fetch("https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        alert("Webhook POST sent ✅ Check Make.com");
-      } catch (err) {
-        alert("Error sending to webhook: " + err);
-      }
-    });
-  </script>
 </body>
 </html>
