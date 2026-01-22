@@ -1,46 +1,156 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PO Arrival NFC Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f7f7f7;
+      color: #333;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    img.logo {
+      display: block;
+      margin: 0 auto 20px auto;
+      max-width: 150px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #0057A0; /* logo blue accent */
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    .po-input-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .po-prefix {
+      background: #eee;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px 0 0 6px;
+      font-weight: bold;
+      font-size: 16px;
+      user-select: none;
+    }
+
+    .po-number {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-left: none;
+      border-radius: 0 6px 6px 0;
+      font-size: 16px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 6px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #0057A0; /* logo blue accent */
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #003e73;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <h2>PO Arrival Test</h2>
+  <div class="container">
+    <img src="https://alsidentify.ie/wp-content/uploads/2025/03/icon_brand_symbol_primary.svg" alt="Company Logo" class="logo">
+    <h2>PO Arrival Test</h2>
 
-  <form id="poForm">
-    <label>PO Number:</label><br>
-    <input type="text" id="poNumber" name="po_number" required><br><br>
+    <form id="poForm">
+      <div class="po-input-container">
+        <span class="po-prefix">PO-</span>
+        <input type="text" id="poNumber" class="po-number" name="po_number" placeholder="Enter number" required>
+      </div>
 
-    <label>
-      <input type="checkbox" id="arrived" name="arrived" value="true" required>
-      Marked as arrived
-    </label><br><br>
+      <label>
+        <input type="checkbox" id="arrived" name="arrived" value="true">
+        Marked as arrived
+      </label>
 
-    <label>Received by:</label><br>
-    <input type="text" id="receivedBy" name="received_by" required><br><br>
+      <label>Received by:</label>
+      <input type="text" id="receivedBy" name="received_by">
 
-    <button type="submit">Submit</button>
-  </form>
+      <button type="submit">Submit</button>
+    </form>
 
-  <div id="message" style="margin-top:20px; font-weight:bold;"></div>
+    <div id="message"></div>
+  </div>
 
   <script>
     const form = document.getElementById("poForm");
     const messageDiv = document.getElementById("message");
+    const arrivedCheckbox = document.getElementById("arrived");
+    const receivedByInput = document.getElementById("receivedBy");
 
     form.addEventListener("submit", async (e) => {
-      e.preventDefault(); // prevent page reload
+      e.preventDefault();
 
-      const po = document.getElementById("poNumber").value.trim();
-      const arrived = document.getElementById("arrived").checked;
-      const receivedBy = document.getElementById("receivedBy").value.trim();
+      const poNumber = document.getElementById("poNumber").value.trim();
+      const arrived = arrivedCheckbox.checked;
+      const receivedBy = receivedByInput.value.trim();
 
-      if (!po || !receivedBy || !arrived) {
-        alert("Fill all fields and tick 'Marked as arrived'.");
+      if (!poNumber) {
+        alert("Please enter the PO number.");
+        return;
+      }
+
+      if (arrived && !receivedBy) {
+        alert("Please fill 'Received by' if marked as arrived.");
         return;
       }
 
       const payload = {
-        po_number: po,
+        po_number: "PO-" + poNumber,
         arrived: arrived,
         received_by: receivedBy
       };
@@ -55,14 +165,10 @@
           }
         );
 
-        // Try to read the response as text
-        const text = await response.text();
-
-        // Show the response body from Make
-        messageDiv.textContent = "Reference: " + text;
+        const data = await response.json();
+        messageDiv.textContent = "Reference: " + data.reference;
       } catch (err) {
         messageDiv.textContent = "Error sending data to Make.com";
-        console.error(err);
       }
     });
   </script>
