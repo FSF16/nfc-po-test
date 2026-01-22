@@ -59,7 +59,7 @@
         const text = await response.text();
 
         // Show the response body from Make
-        messageDiv.textContent = "Response from Make: " + text;
+        messageDiv.textContent = "Reference: " + text;
       } catch (err) {
         messageDiv.textContent = "Error sending data to Make.com";
         console.error(err);
