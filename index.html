@@ -4,109 +4,125 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PO Arrival/Enquiry</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #ffffff;
+      background: #ffffff;
       padding: 20px;
       color: #333;
     }
+
     .container {
-      max-width: 400px;
+      max-width: 420px;
       margin: auto;
-      border: 2px solid #009688; /* logo color */
+      border: 2px solid #009688;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    h2 {
-      text-align: center;
-      color: #009688;
-    }
+
     img.logo {
       display: block;
       margin: 0 auto 20px auto;
       max-width: 120px;
     }
-    form {
-      display: flex;
-      flex-direction: column;
+
+    h2 {
+      text-align: center;
+      color: #009688;
+      margin-bottom: 20px;
     }
+
     label {
-      margin-top: 10px;
-      margin-bottom: 5px;
       font-weight: bold;
+      margin-top: 10px;
+      display: block;
     }
-    input[type="text"] {
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 100%;
-      box-sizing: border-box;
-    }
+
     .po-box {
       display: flex;
-      gap: 5px;
+      margin-top: 5px;
     }
+
     .po-prefix {
       padding: 10px;
-      background-color: #eee;
+      background: #eee;
       border: 1px solid #ccc;
+      border-right: none;
       border-radius: 6px 0 0 6px;
+      font-weight: bold;
       display: flex;
       align-items: center;
-      font-weight: bold;
     }
+
     .po-input {
-      border-radius: 0 6px 6px 0;
       flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 0 6px 6px 0;
+      font-size: 16px;
     }
+
     .checkbox-container {
       display: flex;
       align-items: center;
-      margin-top: 15px;
       gap: 8px;
+      margin-top: 15px;
       font-weight: bold;
     }
+
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
     button {
       margin-top: 20px;
+      width: 100%;
       padding: 12px;
-      background-color: #009688;
-      color: white;
+      background: #009688;
+      color: #fff;
       border: none;
-      font-size: 16px;
       border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
     }
+
     button:hover {
-      background-color: #00796B;
+      background: #00796B;
     }
+
     #message {
       margin-top: 20px;
-      font-weight: bold;
       text-align: center;
-      color: #d32f2f; /* error color */
-    }
-    @media (max-width: 480px) {
-      .container {
-        padding: 15px;
-      }
-      input[type="text"], button {
-        font-size: 14px;
-      }
+      font-weight: bold;
     }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <img class="logo" src="https://alsidentify.ie/wp-content/uploads/2025/03/icon_brand_symbol_primary.svg" alt="Company Logo">
-    <h2>PO Arrival/Enquiry</h2>
+    <img
+      src="https://alsidentify.ie/wp-content/uploads/2025/03/icon_brand_symbol_primary.svg"
+      class="logo"
+      alt="ALS Identify Logo"
+    >
+
+    <h2>PO Arrival / Enquiry</h2>
+
     <form id="poForm">
-      <label>PO Number:</label>
+      <label>PO Number</label>
       <div class="po-box">
         <div class="po-prefix">PO-</div>
-        <input type="text" id="poNumber" class="po-input" placeholder="Enter number only" required pattern="\d*">
+        <input
+          type="text"
+          id="poNumber"
+          class="po-input"
+          placeholder="Numbers only"
+          inputmode="numeric"
+          required
+        >
       </div>
 
       <label class="checkbox-container">
@@ -114,11 +130,12 @@
         Marked as arrived
       </label>
 
-      <label>Received by:</label>
-      <input type="text" id="receivedBy" placeholder="Enter your name">
+      <label>Received by</label>
+      <input type="text" id="receivedBy" placeholder="Name">
 
       <button type="submit">Submit</button>
     </form>
+
     <div id="message"></div>
   </div>
 
@@ -129,47 +146,64 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const poNumberInput = document.getElementById("poNumber");
-      const poNumber = poNumberInput.value.trim();
+      const po = document.getElementById("poNumber").value.trim();
       const arrived = document.getElementById("arrived").checked;
-      const receivedByInput = document.getElementById("receivedBy");
-      const receivedBy = receivedByInput.value.trim();
+      const receivedBy = document.getElementById("receivedBy").value.trim();
 
-      // Validation
-      if (!/^\d+$/.test(poNumber)) {
-        messageDiv.textContent = "PO number must be digits only.";
+      messageDiv.textContent = "";
+
+      if (!/^\d+$/.test(po)) {
+        messageDiv.style.color = "red";
+        messageDiv.textContent = "PO number must contain digits only.";
         return;
       }
-      if (arrived && receivedBy === "") {
+
+      if (arrived && !receivedBy) {
+        messageDiv.style.color = "red";
         messageDiv.textContent = "Please enter who received the PO.";
         return;
       }
 
       const payload = {
-        po_number: "PO-" + poNumber,
+        po_number: "PO-" + po,
         arrived: arrived,
         received_by: receivedBy
       };
 
       try {
-        const response = await fetch("https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+        const response = await fetch(
+          "https://hook.eu2.make.com/0q05ibp52ws4rwa4xm4nvu9utl48ki1s",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          }
+        );
 
-        const data = await response.json();
-
-        if (data.reference) {
-          messageDiv.style.color = "#009688";
-          messageDiv.textContent = "Reference: " + data.reference;
-        } else {
-          messageDiv.style.color = "#d32f2f";
-          messageDiv.textContent = "PO not found, please check number and insert again.";
+        // 🔑 THIS IS THE FIX
+        if (!response.ok) {
+          throw new Error("Make returned error");
         }
+
+        const text = await response.text();
+
+        let data = {};
+        try {
+          data = JSON.parse(text);
+        } catch {
+          // Make returned plain text or empty body — still success
+        }
+
+        messageDiv.style.color = "#009688";
+        messageDiv.textContent =
+          data.reference
+            ? "Reference: " + data.reference
+            : "PO processed successfully ✔️";
+
       } catch (err) {
-        messageDiv.style.color = "#d32f2f";
-        messageDiv.textContent = "PO not found, please check number and insert again.";
+        messageDiv.style.color = "red";
+        messageDiv.textContent =
+          "PO not found, please check number and insert again.";
       }
     });
   </script>
