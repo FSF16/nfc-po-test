@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PO Arrival NFC Test</title>
+  <title>PO Arrival/Enquiry</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -51,7 +51,7 @@
 
     .po-input-container {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       margin-bottom: 15px;
     }
 
@@ -63,6 +63,8 @@
       font-weight: bold;
       font-size: 16px;
       user-select: none;
+      display: flex;
+      align-items: center;
     }
 
     .po-number {
@@ -99,17 +101,33 @@
       font-weight: bold;
       text-align: center;
     }
+
+    /* Mobile friendly */
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+      }
+
+      .po-prefix, .po-number {
+        font-size: 14px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 8px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <img src="https://alsidentify.ie/wp-content/uploads/2025/03/icon_brand_symbol_primary.svg" alt="Company Logo" class="logo">
-    <h2>PO Arrival Test</h2>
+    <h2>PO Arrival/Enquiry</h2>
 
     <form id="poForm">
       <div class="po-input-container">
         <span class="po-prefix">PO-</span>
-        <input type="text" id="poNumber" class="po-number" name="po_number" placeholder="Enter number" required>
+        <input type="text" id="poNumber" class="po-number" name="po_number" placeholder="Enter number" pattern="\d*" inputmode="numeric" required>
       </div>
 
       <label>
@@ -139,8 +157,9 @@
       const arrived = arrivedCheckbox.checked;
       const receivedBy = receivedByInput.value.trim();
 
-      if (!poNumber) {
-        alert("Please enter the PO number.");
+      // Allow only numbers in PO
+      if (!/^\d+$/.test(poNumber)) {
+        alert("PO number must be numeric only.");
         return;
       }
 
