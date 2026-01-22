@@ -55,10 +55,11 @@
           }
         );
 
-        const data = await response.json();
-
-        // Show the reference returned from Make
-        messageDiv.textContent = "Reference: " + data.reference;
+        if (response.ok) {
+          messageDiv.textContent = "Data sent successfully!";
+        } else {
+          messageDiv.textContent = "Error sending data to Make.com";
+        }
       } catch (err) {
         messageDiv.textContent = "Error sending data to Make.com";
       }
