@@ -7,115 +7,77 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
       padding: 20px;
-      background-color: #f7f7f7;
-      color: #333;
     }
-
     .container {
-      max-width: 400px;
+      max-width: 500px;
       margin: 0 auto;
       background: #fff;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
     img.logo {
       display: block;
       margin: 0 auto 20px auto;
-      max-width: 150px;
+      width: 120px;
     }
-
     h2 {
       text-align: center;
-      color: #0057A0; /* logo blue accent */
+      color: #003366; /* using logo color */
       margin-bottom: 20px;
     }
-
     label {
-      font-weight: bold;
       display: block;
-      margin-bottom: 6px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 8px 12px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-
-    .po-input-container {
-      display: flex;
-      align-items: stretch;
-      margin-bottom: 15px;
-    }
-
-    .po-prefix {
-      background: #eee;
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px 0 0 6px;
+      margin-bottom: 5px;
       font-weight: bold;
-      font-size: 16px;
-      user-select: none;
+    }
+    .po-box {
+      display: flex;
+      margin-bottom: 15px;
+    }
+    .po-prefix {
+      background: #e6f0ff;
+      color: #003366;
+      padding: 10px;
+      border: 1px solid #003366;
+      border-radius: 4px 0 0 4px;
       display: flex;
       align-items: center;
     }
-
-    .po-number {
+    .po-input {
       flex: 1;
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-left: none;
-      border-radius: 0 6px 6px 0;
-      font-size: 16px;
-    }
-
-    input[type="checkbox"] {
-      margin-right: 6px;
-    }
-
-    button {
-      width: 100%;
-      background-color: #0057A0; /* logo blue accent */
-      color: #fff;
       padding: 10px;
+      border: 1px solid #003366;
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+    }
+    input[type="text"], input[type="checkbox"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #003366;
+      color: #fff;
+      padding: 12px;
+      width: 100%;
       border: none;
       border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
-      font-weight: bold;
     }
-
     button:hover {
-      background-color: #003e73;
+      background-color: #0055aa;
     }
-
     #message {
       margin-top: 20px;
       font-weight: bold;
       text-align: center;
-    }
-
-    /* Mobile friendly */
-    @media (max-width: 480px) {
-      .container {
-        padding: 15px;
-      }
-
-      .po-prefix, .po-number {
-        font-size: 14px;
-      }
-
-      button {
-        font-size: 14px;
-        padding: 8px;
-      }
+      color: red;
     }
   </style>
 </head>
@@ -125,18 +87,19 @@
     <h2>PO Arrival/Enquiry</h2>
 
     <form id="poForm">
-      <div class="po-input-container">
-        <span class="po-prefix">PO-</span>
-        <input type="text" id="poNumber" class="po-number" name="po_number" placeholder="Enter number" pattern="\d*" inputmode="numeric" required>
+      <label>PO Number:</label>
+      <div class="po-box">
+        <div class="po-prefix">PO-</div>
+        <input type="text" id="poNumber" class="po-input" placeholder="Enter number only" required>
       </div>
 
       <label>
-        <input type="checkbox" id="arrived" name="arrived" value="true">
+        <input type="checkbox" id="arrived">
         Marked as arrived
       </label>
 
       <label>Received by:</label>
-      <input type="text" id="receivedBy" name="received_by">
+      <input type="text" id="receivedBy" placeholder="Enter your name">
 
       <button type="submit">Submit</button>
     </form>
@@ -185,9 +148,11 @@
         );
 
         const data = await response.json();
+        messageDiv.style.color = "green";
         messageDiv.textContent = "Reference: " + data.reference;
       } catch (err) {
-        messageDiv.textContent = "Error sending data to Make.com";
+        messageDiv.style.color = "red";
+        messageDiv.textContent = "PO not found, please check the number and insert again.";
       }
     });
   </script>
